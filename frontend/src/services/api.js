@@ -27,14 +27,14 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// 響應攔截器 - 處理 401 錯誤
+// 響應攔截器 - 處理錯誤
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // 不在這裡自動重定向，讓 AuthContext 統一處理認證錯誤
+    // 只記錄錯誤以便除錯
     if (error.response?.status === 401) {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      console.warn('API returned 401 Unauthorized:', error.config?.url);
     }
     return Promise.reject(error);
   }
