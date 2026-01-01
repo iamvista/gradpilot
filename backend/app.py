@@ -32,7 +32,15 @@ def create_app(config_name=None):
     # 初始化擴展
     db.init_app(app)
     jwt = JWTManager(app)
-    CORS(app, origins=app.config['CORS_ORIGINS'])
+
+    # 配置 CORS - 允許所有必要的方法和標頭
+    CORS(app,
+         origins=app.config['CORS_ORIGINS'],
+         supports_credentials=True,
+         allow_headers=['Content-Type', 'Authorization'],
+         methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+         expose_headers=['Content-Type', 'Authorization'])
+
     migrate = Migrate(app, db)
 
     # 註冊藍圖
