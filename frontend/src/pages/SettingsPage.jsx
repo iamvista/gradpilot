@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, User, Lock, Save } from 'lucide-react'
-import { authAPI } from '../services/api'
+import { ArrowLeft, User, Lock, Save, Download, Database } from 'lucide-react'
+import { authAPI, exportAPI } from '../services/api'
 
 const SettingsPage = () => {
   const { user, logout, updateUser } = useAuth()
@@ -26,6 +26,7 @@ const SettingsPage = () => {
 
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
+  const [exporting, setExporting] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -94,6 +95,53 @@ const SettingsPage = () => {
       })
     } finally {
       setLoading(false)
+    }
+  }
+
+  // 導出功能
+  const handleExport = async (exportType, format = 'json') => {
+    setExporting(true)
+    setMessage({ type: '', text: '' })
+
+    try {
+      let response
+      let filename
+
+      switch (exportType) {
+        case 'all':
+          response = await exportAPI.exportAll()
+          filename = `gradpilot_all_data_${new Date().toISOString().split('T')[0]}.json`
+          break
+        case 'todos':
+          response = await exportAPI.exportTodos(format)
+          filename = `gradpilot_todos_${new Date().toISOString().split('T')[0]}.${format === 'csv' ? 'csv' : format === 'md' ? 'md' : 'json'}`
+          break
+        case 'notes':
+          response = await exportAPI.exportNotes(format)
+          filename = `gradpilot_notes_${new Date().toISOString().split('T')[0]}.${format === 'md' ? 'md' : 'json'}`
+          break
+        default:
+          return
+      }
+
+      // 創建下載鏈接
+      const url = window.URL.createObjectURL(new Blob([response.data]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', filename)
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+
+      setMessage({ type: 'success', text: '數據導出成功！' })
+    } catch (error) {
+      setMessage({
+        type: 'error',
+        text: error.response?.data?.error || '導出失敗，請稍後再試'
+      })
+    } finally {
+      setExporting(false)
     }
   }
 
@@ -280,6 +328,111 @@ const SettingsPage = () => {
                 {loading ? '修改中...' : '修改密碼'}
               </button>
             </form>
+          </div>
+
+          {/* 數據管理 */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <Database className="text-primary" size={24} />
+              <h2 className="text-xl font-semibold">數據管理</h2>
+            </div>
+
+            <div className="space-y-4">
+              {/* 導出所有數據 */}
+              <div className="border border-gray-200 rounded-lg p-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-900 mb-1">導出所有數據</h3>
+                    <p className="text-sm text-gray-600">
+                      導出所有待辦事項、筆記和番茄鐘記錄為 JSON 格式
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleExport('all')}
+                    disabled={exporting}
+                    className="ml-4 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition flex items-center gap-2 disabled:opacity-50 whitespace-nowrap"
+                  >
+                    <Download size={16} />
+                    {exporting ? '導出中...' : '導出 JSON'}
+                  </button>
+                </div>
+              </div>
+
+              {/* 導出待辦事項 */}
+              <div className="border border-gray-200 rounded-lg p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-900 mb-1">導出待辦事項</h3>
+                    <p className="text-sm text-gray-600">
+                      選擇格式導出所有待辦事項
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleExport('todos', 'json')}
+                    disabled={exporting}
+                    className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    <Download size={16} />
+                    JSON
+                  </button>
+                  <button
+                    onClick={() => handleExport('todos', 'csv')}
+                    disabled={exporting}
+                    className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    <Download size={16} />
+                    CSV
+                  </button>
+                  <button
+                    onClick={() => handleExport('todos', 'md')}
+                    disabled={exporting}
+                    className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    <Download size={16} />
+                    Markdown
+                  </button>
+                </div>
+              </div>
+
+              {/* 導出筆記 */}
+              <div className="border border-gray-200 rounded-lg p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-900 mb-1">導出筆記</h3>
+                    <p className="text-sm text-gray-600">
+                      選擇格式導出所有筆記
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleExport('notes', 'json')}
+                    disabled={exporting}
+                    className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    <Download size={16} />
+                    JSON
+                  </button>
+                  <button
+                    onClick={() => handleExport('notes', 'md')}
+                    disabled={exporting}
+                    className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    <Download size={16} />
+                    Markdown
+                  </button>
+                </div>
+              </div>
+
+              {/* 提示信息 */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-800">
+                  💡 <strong>提示：</strong>定期備份您的數據可以防止數據丟失。導出的文件可以用於數據遷移或存檔。
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </main>

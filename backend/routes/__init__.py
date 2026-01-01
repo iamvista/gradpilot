@@ -10,5 +10,6 @@ from .pomodoro import pomodoro_bp
 from .dashboard import dashboard_bp
 from .search import search_bp
 from .export import export_bp
+from .references import references_bp
 
-__all__ = ['auth_bp', 'todos_bp', 'notes_bp', 'pomodoro_bp', 'dashboard_bp', 'search_bp', 'export_bp']
+__all__ = ['auth_bp', 'todos_bp', 'notes_bp', 'pomodoro_bp', 'dashboard_bp', 'search_bp', 'export_bp', 'references_bp']

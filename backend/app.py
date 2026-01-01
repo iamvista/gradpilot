@@ -12,7 +12,7 @@ from datetime import datetime
 
 from config import config
 from models import db
-from routes import auth_bp, todos_bp, notes_bp, pomodoro_bp, dashboard_bp, search_bp, export_bp
+from routes import auth_bp, todos_bp, notes_bp, pomodoro_bp, dashboard_bp, search_bp, export_bp, references_bp
 
 
 def create_app(config_name=None):
@@ -53,6 +53,7 @@ def create_app(config_name=None):
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(search_bp)
     app.register_blueprint(export_bp)
+    app.register_blueprint(references_bp)
 
     # 健康檢查端點
     @app.route('/health')
@@ -83,7 +84,7 @@ def create_app(config_name=None):
     def index():
         return jsonify({
             'message': 'GradPilot 2.0 API',
-            'version': '2.0.1',
+            'version': '2.1.0',
             'endpoints': {
                 'auth': '/api/auth',
                 'todos': '/api/todos',
@@ -91,13 +92,15 @@ def create_app(config_name=None):
                 'pomodoro': '/api/pomodoro',
                 'dashboard': '/api/dashboard',
                 'search': '/api/search',
-                'export': '/api/export'
+                'export': '/api/export',
+                'references': '/api/references'
             },
             'new_features': [
                 '密碼重置功能',
                 '用戶資料編輯',
                 '全局搜索',
-                '數據導出 (JSON/CSV/Markdown)'
+                '數據導出 (JSON/CSV/Markdown)',
+                '學術文獻管理 (解析/格式化/BibTeX導出)'
             ]
         }), 200
 
@@ -155,4 +158,5 @@ def create_app(config_name=None):
 # 用於開發環境直接運行
 if __name__ == '__main__':
     app = create_app('development')
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.environ.get('PORT', 5001))
+    app.run(host='0.0.0.0', port=port, debug=True)

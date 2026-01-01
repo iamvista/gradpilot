@@ -6,6 +6,7 @@ import DashboardPage from './pages/DashboardPage'
 import SettingsPage from './pages/SettingsPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
+import ReferencesPage from './pages/ReferencesPage'
 import PrivateRoute from './components/PrivateRoute'
 
 function App() {
@@ -30,6 +31,14 @@ function App() {
             element={
               <PrivateRoute>
                 <SettingsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/references"
+            element={
+              <PrivateRoute>
+                <ReferencesPage />
               </PrivateRoute>
             }
           />

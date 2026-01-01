@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
-import { LogOut, Settings } from 'lucide-react'
+import { LogOut, Settings, Search, BookOpen } from 'lucide-react'
 import Clock from '../components/Dashboard/Clock'
 import StatsCards from '../components/Dashboard/StatsCards'
 import TodoList from '../components/Todo/TodoList'
 import PomodoroTimer from '../components/Pomodoro/PomodoroTimer'
 import NotesList from '../components/Notes/NotesList'
+import SearchModal from '../components/SearchModal'
 import { dashboardAPI } from '../services/api'
 
 const DashboardPage = () => {
@@ -14,6 +15,7 @@ const DashboardPage = () => {
   const navigate = useNavigate()
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [searchOpen, setSearchOpen] = useState(false)
 
   const fetchStats = async () => {
     try {
@@ -31,6 +33,19 @@ const DashboardPage = () => {
     // 每 30 秒更新一次統計
     const interval = setInterval(fetchStats, 30000)
     return () => clearInterval(interval)
+  }, [])
+
+  // 鍵盤快捷鍵：Ctrl/Cmd + K 打開搜索
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault()
+        setSearchOpen(true)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
   const handleLogout = () => {
@@ -52,6 +67,22 @@ const DashboardPage = () => {
               <span className="text-sm text-gray-600">
                 歡迎，<span className="font-semibold text-primary">{user?.username}</span>
               </span>
+              <button
+                onClick={() => navigate('/references')}
+                className="flex items-center gap-2 text-gray-600 hover:text-primary transition"
+                title="文獻管理"
+              >
+                <BookOpen size={18} />
+                <span className="text-sm">文獻</span>
+              </button>
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="flex items-center gap-2 text-gray-600 hover:text-primary transition"
+                title="搜索 (Ctrl/Cmd + K)"
+              >
+                <Search size={18} />
+                <span className="text-sm">搜索</span>
+              </button>
               <button
                 onClick={() => navigate('/settings')}
                 className="flex items-center gap-2 text-gray-600 hover:text-primary transition"
@@ -104,6 +135,9 @@ const DashboardPage = () => {
           </div>
         </div>
       </main>
+
+      {/* 搜索 Modal */}
+      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   )
 }

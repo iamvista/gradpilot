@@ -81,4 +81,31 @@ export const dashboardAPI = {
   getStats: () => api.get('/dashboard/stats'),
 };
 
+// 搜索 API
+export const searchAPI = {
+  searchAll: (query) => api.get('/search', { params: { q: query } }),
+  searchTodos: (query) => api.get('/search/todos', { params: { q: query } }),
+  searchNotes: (query) => api.get('/search/notes', { params: { q: query } }),
+};
+
+// 導出 API
+export const exportAPI = {
+  exportAll: () => api.get('/export/all', { responseType: 'blob' }),
+  exportTodos: (format = 'json') => api.get('/export/todos', { params: { format }, responseType: 'blob' }),
+  exportNotes: (format = 'json') => api.get('/export/notes', { params: { format }, responseType: 'blob' }),
+};
+
+// 文獻 API
+export const referencesAPI = {
+  parse: (data) => api.post('/references/parse', data),
+  getAll: (params) => api.get('/references', { params }),
+  create: (data) => api.post('/references', data),
+  getOne: (id) => api.get(`/references/${id}`),
+  update: (id, data) => api.put(`/references/${id}`, data),
+  delete: (id) => api.delete(`/references/${id}`),
+  format: (data) => api.post('/references/format', data),
+  export: (params) => api.get('/references/export', { params, responseType: 'blob' }),
+  getStyles: () => api.get('/references/styles'),
+};
+
 export default api;

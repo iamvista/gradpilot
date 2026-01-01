@@ -31,6 +31,7 @@ class User(db.Model):
     todos = db.relationship('Todo', backref='user', lazy=True, cascade='all, delete-orphan')
     notes = db.relationship('Note', backref='user', lazy=True, cascade='all, delete-orphan')
     pomodoro_sessions = db.relationship('PomodoroSession', backref='user', lazy=True, cascade='all, delete-orphan')
+    references = db.relationship('Reference', backref='user', lazy=True, cascade='all, delete-orphan')
 
     def set_password(self, password):
         """設定密碼（加密）"""

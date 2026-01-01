@@ -12,5 +12,6 @@ from .user import User
 from .todo import Todo
 from .note import Note
 from .pomodoro import PomodoroSession
+from .reference import Reference
 
-__all__ = ['db', 'User', 'Todo', 'Note', 'PomodoroSession']
+__all__ = ['db', 'User', 'Todo', 'Note', 'PomodoroSession', 'Reference']
