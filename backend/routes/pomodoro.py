@@ -17,7 +17,7 @@ pomodoro_bp = Blueprint('pomodoro', __name__, url_prefix='/api/pomodoro')
 def get_sessions():
     """獲取番茄鐘記錄"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
 
         # 查詢參數
         start_date = request.args.get('start_date')
@@ -45,7 +45,7 @@ def get_sessions():
 def create_session():
     """記錄新的番茄鐘會話"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         data = request.get_json()
 
         session = PomodoroSession(
@@ -73,7 +73,7 @@ def create_session():
 def get_statistics():
     """獲取番茄鐘統計資料"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
 
         # 查詢參數
         period = request.args.get('period', 'week')  # week, month, year

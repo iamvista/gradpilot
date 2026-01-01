@@ -15,7 +15,7 @@ notes_bp = Blueprint('notes', __name__, url_prefix='/api/notes')
 def get_notes():
     """獲取用戶的所有筆記"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
 
         # 查詢參數
         category = request.args.get('category')
@@ -42,7 +42,7 @@ def get_notes():
 def create_note():
     """創建新筆記"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         data = request.get_json()
 
         if not data.get('title'):
@@ -73,7 +73,7 @@ def create_note():
 def update_note(note_id):
     """更新筆記"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         note = Note.query.filter_by(id=note_id, user_id=user_id).first()
 
         if not note:
@@ -108,7 +108,7 @@ def update_note(note_id):
 def delete_note(note_id):
     """刪除筆記"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         note = Note.query.filter_by(id=note_id, user_id=user_id).first()
 
         if not note:

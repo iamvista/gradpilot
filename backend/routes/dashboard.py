@@ -17,7 +17,7 @@ dashboard_bp = Blueprint('dashboard', __name__, url_prefix='/api/dashboard')
 def get_dashboard_stats():
     """獲取儀表板統計資料"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
 
         # 今日日期
         today = datetime.utcnow().date()

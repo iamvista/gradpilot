@@ -117,7 +117,7 @@ def create_app(config_name=None):
     def user_lookup_callback(_jwt_header, jwt_data):
         """當 JWT token 有效時，加載用戶資料"""
         from models import User
-        user_id = jwt_data["sub"]
+        user_id = int(jwt_data["sub"])  # 轉換字符串為整數
         return User.query.filter_by(id=user_id).first()
 
     @jwt.revoked_token_loader

@@ -16,7 +16,7 @@ todos_bp = Blueprint('todos', __name__, url_prefix='/api/todos')
 def get_todos():
     """獲取用戶的所有待辦事項"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
 
         # 查詢參數
         completed = request.args.get('completed')
@@ -43,7 +43,7 @@ def get_todos():
 def create_todo():
     """創建新待辦事項"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         data = request.get_json()
 
         if not data.get('title'):
@@ -73,7 +73,7 @@ def create_todo():
 def get_todo(todo_id):
     """獲取單個待辦事項"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         todo = Todo.query.filter_by(id=todo_id, user_id=user_id).first()
 
         if not todo:
@@ -90,7 +90,7 @@ def get_todo(todo_id):
 def update_todo(todo_id):
     """更新待辦事項"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         todo = Todo.query.filter_by(id=todo_id, user_id=user_id).first()
 
         if not todo:
@@ -131,7 +131,7 @@ def update_todo(todo_id):
 def delete_todo(todo_id):
     """刪除待辦事項"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         todo = Todo.query.filter_by(id=todo_id, user_id=user_id).first()
 
         if not todo:

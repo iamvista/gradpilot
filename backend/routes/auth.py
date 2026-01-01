@@ -34,9 +34,9 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-        # 生成 JWT token
-        access_token = create_access_token(identity=user.id)
-        refresh_token = create_refresh_token(identity=user.id)
+        # 生成 JWT token（identity 必須是字符串）
+        access_token = create_access_token(identity=str(user.id))
+        refresh_token = create_refresh_token(identity=str(user.id))
 
         return jsonify({
             'message': '註冊成功',
@@ -65,9 +65,9 @@ def login():
         if not user or not user.check_password(data['password']):
             return jsonify({'error': 'Email 或密碼錯誤'}), 401
 
-        # 生成 JWT token
-        access_token = create_access_token(identity=user.id)
-        refresh_token = create_refresh_token(identity=user.id)
+        # 生成 JWT token（identity 必須是字符串）
+        access_token = create_access_token(identity=str(user.id))
+        refresh_token = create_refresh_token(identity=str(user.id))
 
         return jsonify({
             'message': '登入成功',
@@ -85,7 +85,7 @@ def login():
 def get_current_user():
     """獲取當前用戶資訊"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())  # 轉換字符串為整數
         user = User.query.get(user_id)
 
         if not user:
