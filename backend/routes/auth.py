@@ -109,3 +109,38 @@ def refresh():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+@auth_bp.route('/delete-account', methods=['DELETE'])
+def delete_account_by_email():
+    """通過 email 刪除帳號（無需認證）"""
+    try:
+        data = request.get_json()
+        email = data.get('email')
+
+        if not email:
+            return jsonify({'error': '請提供 email'}), 400
+
+        # 查找用戶
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return jsonify({'error': '找不到該用戶'}), 404
+
+        # 刪除用戶相關的所有資料
+        from models.todo import Todo
+        from models.note import Note
+        from models.pomodoro import PomodoroSession
+
+        Todo.query.filter_by(user_id=user.id).delete()
+        Note.query.filter_by(user_id=user.id).delete()
+        PomodoroSession.query.filter_by(user_id=user.id).delete()
+
+        # 刪除用戶
+        db.session.delete(user)
+        db.session.commit()
+
+        return jsonify({'message': '帳號已成功刪除'}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
