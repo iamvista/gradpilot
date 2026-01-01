@@ -18,6 +18,7 @@ def create_app(config_name=None):
     """應用工廠函數"""
 
     app = Flask(__name__)
+    app.url_map.strict_slashes = False  # 禁用嚴格斜線，避免 CORS 預檢重定向
 
     # 載入配置
     if config_name is None:
