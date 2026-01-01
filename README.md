@@ -150,6 +150,20 @@ gradpilot-v2/
 
 MIT License
 
+## 📧 聯繫
+
+- 專案主頁: https://github.com/iamvista/gradpilot
+- 問題回報: https://github.com/iamvista/gradpilot/issues
+- Email: iamvista@gmail.com
+
+## 💖 支持專案
+
+如果這個工具對你有幫助，歡迎：
+- ⭐ 給專案一個 Star
+- 🐛 回報問題或建議
+- 🔀 提交 Pull Request
+- ☕ [請我喝杯咖啡](https://vista.im/coffee)
+
 ---
 
 **用心打造，助力研究生學習！** 📚✨
