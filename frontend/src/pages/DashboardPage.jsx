@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { LogOut } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { LogOut, Settings } from 'lucide-react'
 import Clock from '../components/Dashboard/Clock'
 import StatsCards from '../components/Dashboard/StatsCards'
 import TodoList from '../components/Todo/TodoList'
@@ -10,6 +11,7 @@ import { dashboardAPI } from '../services/api'
 
 const DashboardPage = () => {
   const { user, logout } = useAuth()
+  const navigate = useNavigate()
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -50,6 +52,14 @@ const DashboardPage = () => {
               <span className="text-sm text-gray-600">
                 歡迎，<span className="font-semibold text-primary">{user?.username}</span>
               </span>
+              <button
+                onClick={() => navigate('/settings')}
+                className="flex items-center gap-2 text-gray-600 hover:text-primary transition"
+                title="設置"
+              >
+                <Settings size={18} />
+                <span className="text-sm">設置</span>
+              </button>
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-2 text-gray-600 hover:text-primary transition"
