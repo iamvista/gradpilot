@@ -8,6 +8,7 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from flask_migrate import Migrate
 import os
+from datetime import datetime
 
 from config import config
 from models import db
@@ -60,6 +61,21 @@ def create_app(config_name=None):
             'version': '2.0.0'
         }), 200
 
+    # JWT 調試端點（僅用於排查問題）
+    @app.route('/debug/jwt-config')
+    def debug_jwt_config():
+        """顯示 JWT 配置信息（不包含敏感密鑰）"""
+        import hashlib
+        jwt_key = app.config.get('JWT_SECRET_KEY', '')
+        jwt_key_hash = hashlib.sha256(jwt_key.encode()).hexdigest()[:16] if jwt_key else 'NOT_SET'
+
+        return jsonify({
+            'jwt_secret_key_hash': jwt_key_hash,
+            'jwt_access_token_expires': str(app.config.get('JWT_ACCESS_TOKEN_EXPIRES')),
+            'flask_env': os.environ.get('FLASK_ENV'),
+            'has_jwt_secret': bool(jwt_key and jwt_key != 'jwt-secret-key-change-in-production')
+        }), 200
+
     # 根路徑
     @app.route('/')
     def index():
@@ -87,7 +103,7 @@ def create_app(config_name=None):
     def invalid_token_callback(error):
         return jsonify({
             'error': 'Token 無效',
-            'message': '請提供有效的 Token'
+            'message': f'請提供有效的 Token: {str(error)}'
         }), 401
 
     @jwt.unauthorized_loader
@@ -95,6 +111,27 @@ def create_app(config_name=None):
         return jsonify({
             'error': '缺少 Token',
             'message': '請先登入'
+        }), 401
+
+    @jwt.user_lookup_loader
+    def user_lookup_callback(_jwt_header, jwt_data):
+        """當 JWT token 有效時，加載用戶資料"""
+        from models import User
+        user_id = jwt_data["sub"]
+        return User.query.filter_by(id=user_id).first()
+
+    @jwt.additional_claims_loader
+    def add_claims_to_access_token(identity):
+        """添加額外的聲明到 JWT"""
+        return {
+            'iat': datetime.utcnow().timestamp()
+        }
+
+    @jwt.revoked_token_loader
+    def revoked_token_callback(jwt_header, jwt_payload):
+        return jsonify({
+            'error': 'Token 已被撤銷',
+            'message': '請重新登入'
         }), 401
 
     # 創建資料庫表（延遲執行，避免啟動時因資料庫未就緒而失敗）
