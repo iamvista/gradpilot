@@ -6,8 +6,9 @@ services:
     env: python
     region: singapore
     plan: free
-    buildCommand: cd backend && pip install -r requirements.txt
-    startCommand: cd backend && gunicorn --config gunicorn.conf.py wsgi:app
+    rootDirectory: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --config gunicorn.conf.py wsgi:app
     envVars:
       - key: FLASK_ENV
         value: production
@@ -27,8 +28,9 @@ services:
   - type: web
     name: gradpilot-frontend
     env: static
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: frontend/dist
+    rootDirectory: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
         value: https://gradpilot-backend.onrender.com/api
