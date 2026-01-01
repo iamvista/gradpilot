@@ -21,16 +21,30 @@ export const AuthProvider = ({ children }) => {
     const savedUser = localStorage.getItem('user')
 
     if (token && savedUser) {
-      setUser(JSON.parse(savedUser))
-      // 驗證 token 是否有效
+      try {
+        setUser(JSON.parse(savedUser))
+      } catch (e) {
+        console.error('Failed to parse user data:', e)
+        logout()
+        setLoading(false)
+        return
+      }
+
+      // 驗證 token 是否有效（僅在頁面重新載入時）
       authAPI.getCurrentUser()
         .then(res => {
           setUser(res.data)
           localStorage.setItem('user', JSON.stringify(res.data))
         })
-        .catch(() => {
-          // Token 無效，清除
-          logout()
+        .catch((error) => {
+          // 只有在明確的 401 錯誤時才登出
+          if (error.response?.status === 401) {
+            console.log('Token expired, logging out')
+            logout()
+          } else {
+            // 其他錯誤（網路問題等）不登出，保持現有用戶狀態
+            console.warn('Failed to verify token, but keeping user logged in:', error.message)
+          }
         })
         .finally(() => {
           setLoading(false)
