@@ -9,7 +9,7 @@ from models import db, Reference
 from references import ReferenceParser, ReferenceFormatter, APIClient
 from sqlalchemy import or_
 
-references_bp = Blueprint('references', __name__)
+references_bp = Blueprint('references', __name__, url_prefix='/api/references')
 
 # 初始化服務
 parser = ReferenceParser()
