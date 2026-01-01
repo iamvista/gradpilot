@@ -88,9 +88,17 @@ def create_app(config_name=None):
             'message': '請先登入'
         }), 401
 
-    # 創建資料庫表
-    with app.app_context():
-        db.create_all()
+    # 創建資料庫表（延遲執行，避免啟動時因資料庫未就緒而失敗）
+    @app.before_request
+    def ensure_tables():
+        """在第一次請求時創建資料庫表"""
+        if not hasattr(app, '_tables_created'):
+            try:
+                db.create_all()
+                app._tables_created = True
+            except Exception as e:
+                app.logger.warning(f"無法創建資料庫表：{e}")
+                # 不拋出異常，允許健康檢查等端點正常運作
 
     return app
 
