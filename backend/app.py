@@ -12,7 +12,7 @@ from datetime import datetime
 
 from config import config
 from models import db
-from routes import auth_bp, todos_bp, notes_bp, pomodoro_bp, dashboard_bp
+from routes import auth_bp, todos_bp, notes_bp, pomodoro_bp, dashboard_bp, search_bp, export_bp
 
 
 def create_app(config_name=None):
@@ -51,6 +51,8 @@ def create_app(config_name=None):
     app.register_blueprint(notes_bp)
     app.register_blueprint(pomodoro_bp)
     app.register_blueprint(dashboard_bp)
+    app.register_blueprint(search_bp)
+    app.register_blueprint(export_bp)
 
     # 健康檢查端點
     @app.route('/health')
@@ -81,14 +83,22 @@ def create_app(config_name=None):
     def index():
         return jsonify({
             'message': 'GradPilot 2.0 API',
-            'version': '2.0.0',
+            'version': '2.0.1',
             'endpoints': {
                 'auth': '/api/auth',
                 'todos': '/api/todos',
                 'notes': '/api/notes',
                 'pomodoro': '/api/pomodoro',
-                'dashboard': '/api/dashboard'
-            }
+                'dashboard': '/api/dashboard',
+                'search': '/api/search',
+                'export': '/api/export'
+            },
+            'new_features': [
+                '密碼重置功能',
+                '用戶資料編輯',
+                '全局搜索',
+                '數據導出 (JSON/CSV/Markdown)'
+            ]
         }), 200
 
     # JWT 錯誤處理
