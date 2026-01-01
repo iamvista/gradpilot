@@ -38,4 +38,5 @@ databases:
   - name: gradpilot-db
     databaseName: gradpilot
     user: gradpilot
+    region: oregon
     plan: free
