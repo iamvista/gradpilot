@@ -1,0 +1,43 @@
+# Render 部署配置
+services:
+  # 後端 API
+  - type: web
+    name: gradpilot-backend
+    env: python
+    region: singapore
+    plan: free
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && gunicorn --config gunicorn.conf.py wsgi:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gradpilot-db
+          property: connectionString
+      - key: CORS_ORIGINS
+        value: https://gradpilot-frontend.onrender.com
+    healthCheckPath: /health
+
+  # 前端
+  - type: web
+    name: gradpilot-frontend
+    env: static
+    region: singapore
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://gradpilot-backend.onrender.com/api
+
+# 資料庫
+databases:
+  - name: gradpilot-db
+    databaseName: gradpilot
+    user: gradpilot
+    plan: free
