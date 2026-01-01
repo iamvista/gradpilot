@@ -120,13 +120,6 @@ def create_app(config_name=None):
         user_id = jwt_data["sub"]
         return User.query.filter_by(id=user_id).first()
 
-    @jwt.additional_claims_loader
-    def add_claims_to_access_token(identity):
-        """添加額外的聲明到 JWT"""
-        return {
-            'iat': datetime.utcnow().timestamp()
-        }
-
     @jwt.revoked_token_loader
     def revoked_token_callback(jwt_header, jwt_payload):
         return jsonify({
