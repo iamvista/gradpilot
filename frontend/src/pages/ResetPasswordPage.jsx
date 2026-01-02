@@ -25,7 +25,7 @@ const ResetPasswordPage = () => {
     }
 
     if (formData.new_password.length < 6) {
-      setMessage({ type: 'error', text: '密碼至少需要 6 個字符' })
+      setMessage({ type: 'error', text: '密碼至少需要 6 個字元' })
       return
     }
 
@@ -161,7 +161,7 @@ const ResetPasswordPage = () => {
                   value={formData.new_password}
                   onChange={(e) => setFormData({ ...formData, new_password: e.target.value })}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  placeholder="至少 6 個字符"
+                  placeholder="至少 6 個字元"
                   required
                   minLength="6"
                 />

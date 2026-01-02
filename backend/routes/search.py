@@ -1,5 +1,5 @@
 """
-搜索路由
+搜尋路由
 Search Routes
 """
 
@@ -14,18 +14,18 @@ search_bp = Blueprint('search', __name__, url_prefix='/api/search')
 @search_bp.route('/', methods=['GET'])
 @jwt_required()
 def search_all():
-    """全局搜索 - 搜索待辦事項和筆記"""
+    """全局搜尋 - 搜尋待辦事項和筆記"""
     try:
         user_id = int(get_jwt_identity())
         query = request.args.get('q', '').strip()
 
         if not query:
-            return jsonify({'error': '請提供搜索關鍵字'}), 400
+            return jsonify({'error': '請提供搜尋關鍵字'}), 400
 
         if len(query) < 2:
-            return jsonify({'error': '搜索關鍵字至少需要 2 個字符'}), 400
+            return jsonify({'error': '搜尋關鍵字至少需要 2 個字元'}), 400
 
-        # 搜索待辦事項
+        # 搜尋待辦事項
         todos = Todo.query.filter(
             Todo.user_id == user_id,
             or_(
@@ -35,7 +35,7 @@ def search_all():
             )
         ).order_by(Todo.created_at.desc()).limit(20).all()
 
-        # 搜索筆記
+        # 搜尋筆記
         notes = Note.query.filter(
             Note.user_id == user_id,
             or_(
@@ -62,14 +62,14 @@ def search_all():
 @search_bp.route('/todos', methods=['GET'])
 @jwt_required()
 def search_todos():
-    """搜索待辦事項"""
+    """搜尋待辦事項"""
     try:
         user_id = int(get_jwt_identity())
         query = request.args.get('q', '').strip()
         limit = request.args.get('limit', 20, type=int)
 
         if not query:
-            return jsonify({'error': '請提供搜索關鍵字'}), 400
+            return jsonify({'error': '請提供搜尋關鍵字'}), 400
 
         todos = Todo.query.filter(
             Todo.user_id == user_id,
@@ -93,14 +93,14 @@ def search_todos():
 @search_bp.route('/notes', methods=['GET'])
 @jwt_required()
 def search_notes():
-    """搜索筆記"""
+    """搜尋筆記"""
     try:
         user_id = int(get_jwt_identity())
         query = request.args.get('q', '').strip()
         limit = request.args.get('limit', 20, type=int)
 
         if not query:
-            return jsonify({'error': '請提供搜索關鍵字'}), 400
+            return jsonify({'error': '請提供搜尋關鍵字'}), 400
 
         notes = Note.query.filter(
             Note.user_id == user_id,

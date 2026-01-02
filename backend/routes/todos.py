@@ -49,12 +49,21 @@ def create_todo():
         if not data.get('title'):
             return jsonify({'error': '標題不能為空'}), 400
 
+        # 處理 tags - 接受字串或陣列
+        tags_input = data.get('tags')
+        if isinstance(tags_input, list):
+            tags_value = ','.join(tags_input) if tags_input else None
+        elif isinstance(tags_input, str):
+            tags_value = tags_input if tags_input.strip() else None
+        else:
+            tags_value = None
+
         todo = Todo(
             user_id=user_id,
             title=data['title'],
             description=data.get('description', ''),
             priority=data.get('priority', 'medium'),
-            tags=','.join(data.get('tags', [])) if data.get('tags') else None,
+            tags=tags_value,
             due_date=datetime.fromisoformat(data['due_date']) if data.get('due_date') else None
         )
 
@@ -111,7 +120,14 @@ def update_todo(todo_id):
         if 'priority' in data:
             todo.priority = data['priority']
         if 'tags' in data:
-            todo.tags = ','.join(data['tags']) if data['tags'] else None
+            # 處理 tags - 接受字串或陣列
+            tags_input = data['tags']
+            if isinstance(tags_input, list):
+                todo.tags = ','.join(tags_input) if tags_input else None
+            elif isinstance(tags_input, str):
+                todo.tags = tags_input if tags_input.strip() else None
+            else:
+                todo.tags = None
         if 'due_date' in data:
             todo.due_date = datetime.fromisoformat(data['due_date']) if data['due_date'] else None
         if 'order' in data:

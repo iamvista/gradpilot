@@ -34,7 +34,7 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-        # 生成 JWT token（identity 必須是字符串）
+        # 生成 JWT token（identity 必須是字元串）
         access_token = create_access_token(identity=str(user.id))
         refresh_token = create_refresh_token(identity=str(user.id))
 
@@ -65,7 +65,7 @@ def login():
         if not user or not user.check_password(data['password']):
             return jsonify({'error': 'Email 或密碼錯誤'}), 401
 
-        # 生成 JWT token（identity 必須是字符串）
+        # 生成 JWT token（identity 必須是字元串）
         access_token = create_access_token(identity=str(user.id))
         refresh_token = create_refresh_token(identity=str(user.id))
 
@@ -85,7 +85,7 @@ def login():
 def get_current_user():
     """獲取當前用戶資訊"""
     try:
-        user_id = int(get_jwt_identity())  # 轉換字符串為整數
+        user_id = int(get_jwt_identity())  # 轉換字元串為整數
         user = User.query.get(user_id)
 
         if not user:
@@ -176,7 +176,7 @@ def change_password():
 
         # 驗證新密碼
         if len(new_password) < 6:
-            return jsonify({'error': '新密碼至少需要 6 個字符'}), 400
+            return jsonify({'error': '新密碼至少需要 6 個字元'}), 400
 
         if old_password == new_password:
             return jsonify({'error': '新密碼不能與舊密碼相同'}), 400
@@ -302,7 +302,7 @@ def reset_password():
             return jsonify({'error': '請提供新密碼'}), 400
 
         if len(new_password) < 6:
-            return jsonify({'error': '密碼至少需要 6 個字符'}), 400
+            return jsonify({'error': '密碼至少需要 6 個字元'}), 400
 
         # 獲取用戶 ID 並更新密碼
         user_id = int(get_jwt_identity())

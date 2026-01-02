@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, Pin, Trash2, Edit2, X, Save } from 'lucide-react'
+import { Plus, Pin, Trash2, Edit2, X, Save, Tag } from 'lucide-react'
 import { notesAPI } from '../../services/api'
 
 const NotesList = () => {
@@ -7,7 +7,13 @@ const NotesList = () => {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingNote, setEditingNote] = useState(null)
-  const [formData, setFormData] = useState({ title: '', content: '', color: 'yellow' })
+  const [formData, setFormData] = useState({
+    title: '',
+    content: '',
+    color: 'yellow',
+    tags: '',
+    category: ''
+  })
 
   const colors = [
     { name: 'yellow', bg: 'bg-yellow-50', border: 'border-yellow-200' },
@@ -37,12 +43,20 @@ const NotesList = () => {
     if (!formData.title.trim()) return
 
     try {
-      if (editingNote) {
-        await notesAPI.update(editingNote.id, formData)
-      } else {
-        await notesAPI.create(formData)
+      const noteData = {
+        title: formData.title.trim(),
+        content: formData.content.trim() || undefined,
+        color: formData.color,
+        tags: formData.tags.trim() || undefined,
+        category: formData.category.trim() || undefined
       }
-      setFormData({ title: '', content: '', color: 'yellow' })
+
+      if (editingNote) {
+        await notesAPI.update(editingNote.id, noteData)
+      } else {
+        await notesAPI.create(noteData)
+      }
+      setFormData({ title: '', content: '', color: 'yellow', tags: '', category: '' })
       setShowForm(false)
       setEditingNote(null)
       fetchNotes()
@@ -57,7 +71,9 @@ const NotesList = () => {
     setFormData({
       title: note.title,
       content: note.content || '',
-      color: note.color || 'yellow'
+      color: note.color || 'yellow',
+      tags: Array.isArray(note.tags) ? note.tags.join(',') : (note.tags || ''),
+      category: note.category || ''
     })
     setShowForm(true)
   }
@@ -95,7 +111,7 @@ const NotesList = () => {
           onClick={() => {
             setShowForm(!showForm)
             setEditingNote(null)
-            setFormData({ title: '', content: '', color: 'yellow' })
+            setFormData({ title: '', content: '', color: 'yellow', tags: '', category: '' })
           }}
           className="btn-primary py-1.5 px-3 flex items-center gap-1 text-sm"
         >
@@ -122,15 +138,41 @@ const NotesList = () => {
             rows="3"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm resize-none"
           />
+
+          {/* 分類 */}
+          <input
+            type="text"
+            value={formData.category}
+            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            placeholder="分類（例如：學習筆記、研究、會議）"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+          />
+
+          {/* 標籤 */}
+          <div>
+            <input
+              type="text"
+              value={formData.tags}
+              onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+              placeholder="標籤（用逗號分隔，例如：機器學習, 深度學習）"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              💡 標籤可用於搜尋和分類筆記
+            </p>
+          </div>
+
+          {/* 顏色選擇 */}
           <div className="flex items-center justify-between">
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
+              <span className="text-xs text-gray-600">顏色：</span>
               {colors.map(color => (
                 <button
                   key={color.name}
                   type="button"
                   onClick={() => setFormData({ ...formData, color: color.name })}
                   className={`w-6 h-6 rounded-full ${color.bg} border-2 ${
-                    formData.color === color.name ? 'border-primary' : 'border-gray-300'
+                    formData.color === color.name ? 'border-primary ring-2 ring-primary ring-offset-1' : 'border-gray-300'
                   } hover:scale-110 transition`}
                 />
               ))}
@@ -171,31 +213,51 @@ const NotesList = () => {
                     className={`text-gray-400 hover:text-orange-600 transition ${
                       note.pinned ? 'text-orange-600' : ''
                     }`}
+                    title={note.pinned ? '取消置頂' : '置頂'}
                   >
                     <Pin size={14} />
                   </button>
                   <button
                     onClick={() => handleEdit(note)}
                     className="text-gray-400 hover:text-primary transition"
+                    title="編輯"
                   >
                     <Edit2 size={14} />
                   </button>
                   <button
                     onClick={() => handleDelete(note.id)}
                     className="text-gray-400 hover:text-red-600 transition"
+                    title="刪除"
                   >
                     <Trash2 size={14} />
                   </button>
                 </div>
               </div>
-              {note.content && (
-                <p className="text-xs text-gray-600 line-clamp-3">{note.content}</p>
+
+              {/* 分類 */}
+              {note.category && (
+                <div className="mb-2">
+                  <span className="inline-block px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded">
+                    {note.category}
+                  </span>
+                </div>
               )}
-              {note.tags && note.tags.length > 0 && (
-                <div className="flex gap-1 mt-2">
-                  {note.tags.map((tag, idx) => (
-                    <span key={idx} className="text-xs px-2 py-0.5 bg-white rounded-full text-gray-600">
-                      #{tag}
+
+              {/* 內容 */}
+              {note.content && (
+                <p className="text-xs text-gray-600 line-clamp-3 mb-2">{note.content}</p>
+              )}
+
+              {/* 標籤 */}
+              {note.tags && (
+                <div className="flex gap-1.5 flex-wrap mt-2">
+                  {(Array.isArray(note.tags) ? note.tags : note.tags.split(',')).map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full"
+                    >
+                      <Tag size={10} />
+                      {typeof tag === 'string' ? tag.trim() : tag}
                     </span>
                   ))}
                 </div>

@@ -70,7 +70,7 @@ const SettingsPage = () => {
     }
 
     if (passwordForm.new_password.length < 6) {
-      setMessage({ type: 'error', text: '新密碼至少需要 6 個字符' })
+      setMessage({ type: 'error', text: '新密碼至少需要 6 個字元' })
       return
     }
 
@@ -303,7 +303,7 @@ const SettingsPage = () => {
                   required
                   minLength="6"
                 />
-                <p className="mt-1 text-sm text-gray-500">至少 6 個字符</p>
+                <p className="mt-1 text-sm text-gray-500">至少 6 個字元</p>
               </div>
 
               <div>
@@ -429,7 +429,7 @@ const SettingsPage = () => {
               {/* 提示信息 */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-sm text-blue-800">
-                  💡 <strong>提示：</strong>定期備份您的數據可以防止數據丟失。導出的文件可以用於數據遷移或存檔。
+                  💡 <strong>提示：</strong>定期備份您的數據可以防止數據遺失。導出的文件可以用於數據遷移或存檔。
                 </p>
               </div>
             </div>

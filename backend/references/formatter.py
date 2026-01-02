@@ -141,10 +141,10 @@ class APAFormatter(BaseFormatter):
         title = data.get('title', 'Untitled')
         parts.append(f"{title}.")
 
-        # 期刊名稱
+        # 期刊名稱（在 APA 格式中應為斜體，但純文字輸出不含格式標記）
         journal = data.get('journal', '')
         if journal:
-            journal_part = f"*{journal}*"
+            journal_part = journal
 
             # 卷號
             volume = data.get('volume', '')
@@ -193,9 +193,9 @@ class APAFormatter(BaseFormatter):
         year = data.get('year', 'n.d.')
         parts.append(f"({year}).")
 
-        # 書名
+        # 書名（在 APA 格式中應為斜體，但純文字輸出不含格式標記）
         title = data.get('title', 'Untitled')
-        parts.append(f"*{title}*.")
+        parts.append(f"{title}.")
 
         # 出版商
         publisher = data.get('publisher', '')
@@ -229,10 +229,10 @@ class APAFormatter(BaseFormatter):
         title = data.get('title', 'Untitled webpage')
         parts.append(f"{title}.")
 
-        # 網站名稱（如果有）
+        # 網站名稱（如果有，在 APA 格式中應為斜體，但純文字輸出不含格式標記）
         site_name = data.get('site_name', '')
         if site_name:
-            parts.append(f"*{site_name}*.")
+            parts.append(f"{site_name}.")
 
         # URL
         url = data.get('url', '')
@@ -267,10 +267,10 @@ class MLAFormatter(BaseFormatter):
         title = data.get('title', 'Untitled')
         parts.append(f'"{title}."')
 
-        # 期刊名稱（斜體）
+        # 期刊名稱（在 MLA 格式中應為斜體，但純文字輸出不含格式標記）
         journal = data.get('journal', '')
         if journal:
-            journal_part = f"*{journal}*"
+            journal_part = journal
 
             # 卷號
             volume = data.get('volume', '')
@@ -322,9 +322,9 @@ class MLAFormatter(BaseFormatter):
         if authors:
             parts.append(authors + ".")
 
-        # 書名（斜體）
+        # 書名（在格式中應為斜體，但純文字輸出不含格式標記）
         title = data.get('title', 'Untitled')
-        parts.append(f"*{title}*.")
+        parts.append(f"{title}.")
 
         # 出版商
         publisher = data.get('publisher', '')
@@ -359,10 +359,10 @@ class MLAFormatter(BaseFormatter):
         title = data.get('title', 'Untitled webpage')
         parts.append(f'"{title}."')
 
-        # 網站名稱
+        # 網站名稱（在格式中應為斜體，但純文字輸出不含格式標記）
         site_name = data.get('site_name', '')
         if site_name:
-            parts.append(f"*{site_name}*,")
+            parts.append(f"{site_name},")
 
         # 日期
         year = data.get('year', '')
@@ -401,10 +401,10 @@ class ChicagoFormatter(BaseFormatter):
         title = data.get('title', 'Untitled')
         parts.append(f'"{title}."')
 
-        # 期刊名稱（斜體）
+        # 期刊名稱（在 MLA 格式中應為斜體，但純文字輸出不含格式標記）
         journal = data.get('journal', '')
         if journal:
-            journal_part = f"*{journal}*"
+            journal_part = journal
 
             # 卷號
             volume = data.get('volume', '')
@@ -455,9 +455,9 @@ class ChicagoFormatter(BaseFormatter):
         if authors:
             parts.append(authors + ".")
 
-        # 書名（斜體）
+        # 書名（在格式中應為斜體，但純文字輸出不含格式標記）
         title = data.get('title', 'Untitled')
-        parts.append(f"*{title}*.")
+        parts.append(f"{title}.")
 
         # 出版地點（如果有）
         place = data.get('place', '')
@@ -500,10 +500,10 @@ class ChicagoFormatter(BaseFormatter):
         title = data.get('title', 'Untitled webpage')
         parts.append(f'"{title}."')
 
-        # 網站名稱
+        # 網站名稱（在 Chicago 格式中應為斜體，但純文字輸出不含格式標記）
         site_name = data.get('site_name', '')
         if site_name:
-            parts.append(f"*{site_name}*.")
+            parts.append(f"{site_name}.")
 
         # 訪問日期（如果有）
         access_date = data.get('access_date', '')
@@ -546,10 +546,10 @@ class HarvardFormatter(BaseFormatter):
         title = data.get('title', 'Untitled')
         parts.append(f"'{title}',")
 
-        # 期刊名稱（斜體）
+        # 期刊名稱（在 MLA 格式中應為斜體，但純文字輸出不含格式標記）
         journal = data.get('journal', '')
         if journal:
-            journal_part = f"*{journal}*"
+            journal_part = journal
 
             # 卷號
             volume = data.get('volume', '')
@@ -600,9 +600,9 @@ class HarvardFormatter(BaseFormatter):
         year = data.get('year', 'n.d.')
         parts.append(f"({year})")
 
-        # 書名（斜體）
+        # 書名（在格式中應為斜體，但純文字輸出不含格式標記）
         title = data.get('title', 'Untitled')
-        parts.append(f"*{title}*.")
+        parts.append(f"{title}.")
 
         # 出版地點和出版商
         place = data.get('place', '')
@@ -641,10 +641,10 @@ class HarvardFormatter(BaseFormatter):
         title = data.get('title', 'Untitled webpage')
         parts.append(f"'{title}',")
 
-        # 網站名稱
+        # 網站名稱（在 Harvard 格式中應為斜體，但純文字輸出不含格式標記）
         site_name = data.get('site_name', '')
         if site_name:
-            parts.append(f"*{site_name}*.")
+            parts.append(f"{site_name}.")
 
         # URL
         url = data.get('url', '')

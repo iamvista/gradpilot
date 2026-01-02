@@ -8,6 +8,7 @@ import TodoList from '../components/Todo/TodoList'
 import PomodoroTimer from '../components/Pomodoro/PomodoroTimer'
 import NotesList from '../components/Notes/NotesList'
 import SearchModal from '../components/SearchModal'
+import ErrorBoundary from '../components/ErrorBoundary'
 import { dashboardAPI } from '../services/api'
 
 const DashboardPage = () => {
@@ -16,13 +17,25 @@ const DashboardPage = () => {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [error, setError] = useState(null)
 
   const fetchStats = async () => {
     try {
       const response = await dashboardAPI.getStats()
       setStats(response.data)
+      setError(null)
     } catch (error) {
       console.error('獲取統計數據失敗:', error)
+      setError(error.response?.data?.error || error.message || '獲取數據失敗')
+      // 設置默認的 stats 結構以防止崩潰
+      setStats({
+        todos: { total: 0, completed: 0, pending: 0, today_completed: 0, completion_rate: 0 },
+        notes: { total: 0, pinned: 0 },
+        pomodoro: {
+          today: { sessions: 0, minutes: 0, hours: 0 },
+          week: { sessions: 0, minutes: 0, hours: 0 }
+        }
+      })
     } finally {
       setLoading(false)
     }
@@ -35,7 +48,7 @@ const DashboardPage = () => {
     return () => clearInterval(interval)
   }, [])
 
-  // 鍵盤快捷鍵：Ctrl/Cmd + K 打開搜索
+  // 鍵盤快捷鍵：Ctrl/Cmd + K 打開搜尋
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -55,6 +68,7 @@ const DashboardPage = () => {
   }
 
   return (
+    <ErrorBoundary>
     <div className="min-h-screen bg-background">
       {/* 頂部導航欄 */}
       <nav className="bg-white shadow-sm border-b border-gray-200">
@@ -78,10 +92,10 @@ const DashboardPage = () => {
               <button
                 onClick={() => setSearchOpen(true)}
                 className="flex items-center gap-2 text-gray-600 hover:text-primary transition"
-                title="搜索 (Ctrl/Cmd + K)"
+                title="搜尋 (Ctrl/Cmd + K)"
               >
                 <Search size={18} />
-                <span className="text-sm">搜索</span>
+                <span className="text-sm">搜尋</span>
               </button>
               <button
                 onClick={() => navigate('/settings')}
@@ -105,6 +119,13 @@ const DashboardPage = () => {
 
       {/* 主要內容區 */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* 錯誤提示 */}
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-700 text-sm">⚠️ {error}</p>
+          </div>
+        )}
+
         {/* 時鐘和問候 */}
         <Clock username={user?.username} />
 
@@ -136,9 +157,10 @@ const DashboardPage = () => {
         </div>
       </main>
 
-      {/* 搜索 Modal */}
+      {/* 搜尋 Modal */}
       <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
+    </ErrorBoundary>
   )
 }
 

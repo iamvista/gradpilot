@@ -48,12 +48,21 @@ def create_note():
         if not data.get('title'):
             return jsonify({'error': '標題不能為空'}), 400
 
+        # 處理 tags - 接受字串或陣列
+        tags_input = data.get('tags')
+        if isinstance(tags_input, list):
+            tags_value = ','.join(tags_input) if tags_input else None
+        elif isinstance(tags_input, str):
+            tags_value = tags_input if tags_input.strip() else None
+        else:
+            tags_value = None
+
         note = Note(
             user_id=user_id,
             title=data['title'],
             content=data.get('content', ''),
             category=data.get('category'),
-            tags=','.join(data.get('tags', [])) if data.get('tags') else None,
+            tags=tags_value,
             color=data.get('color', 'yellow'),
             pinned=data.get('pinned', False)
         )
@@ -88,7 +97,14 @@ def update_note(note_id):
         if 'category' in data:
             note.category = data['category']
         if 'tags' in data:
-            note.tags = ','.join(data['tags']) if data['tags'] else None
+            # 處理 tags - 接受字串或陣列
+            tags_input = data['tags']
+            if isinstance(tags_input, list):
+                note.tags = ','.join(tags_input) if tags_input else None
+            elif isinstance(tags_input, str):
+                note.tags = tags_input if tags_input.strip() else None
+            else:
+                note.tags = None
         if 'color' in data:
             note.color = data['color']
         if 'pinned' in data:

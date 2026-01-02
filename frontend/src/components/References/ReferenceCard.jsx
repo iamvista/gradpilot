@@ -153,7 +153,7 @@ const ReferenceCard = ({ reference, onUpdate, onDelete, onEdit }) => {
         <div className="flex items-center gap-2 mb-3">
           <Tag size={14} className="text-gray-400" />
           <div className="flex flex-wrap gap-1">
-            {reference.tags.split(',').map((tag, index) => (
+            {(typeof reference.tags === 'string' ? reference.tags.split(',') : []).map((tag, index) => (
               <span
                 key={index}
                 className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded"

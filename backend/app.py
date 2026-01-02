@@ -98,7 +98,7 @@ def create_app(config_name=None):
             'new_features': [
                 '密碼重置功能',
                 '用戶資料編輯',
-                '全局搜索',
+                '全局搜尋',
                 '數據導出 (JSON/CSV/Markdown)',
                 '學術文獻管理 (解析/格式化/BibTeX導出)'
             ]
@@ -130,7 +130,7 @@ def create_app(config_name=None):
     def user_lookup_callback(_jwt_header, jwt_data):
         """當 JWT token 有效時，加載用戶資料"""
         from models import User
-        user_id = int(jwt_data["sub"])  # 轉換字符串為整數
+        user_id = int(jwt_data["sub"])  # 轉換字元串為整數
         return User.query.filter_by(id=user_id).first()
 
     @jwt.revoked_token_loader

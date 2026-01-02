@@ -1,15 +1,27 @@
 import { useState, useEffect, useRef } from 'react'
 import { Play, Pause, RotateCcw, Coffee } from 'lucide-react'
 import { pomodoroAPI } from '../../services/api'
+import { useAuth } from '../../context/AuthContext'
 
 const PomodoroTimer = ({ onSessionComplete }) => {
-  const [minutes, setMinutes] = useState(25)
+  const { user } = useAuth()
+  const pomodoroDuration = user?.pomodoro_duration || 25
+  const breakDuration = user?.break_duration || 5
+
+  const [minutes, setMinutes] = useState(pomodoroDuration)
   const [seconds, setSeconds] = useState(0)
   const [isRunning, setIsRunning] = useState(false)
   const [isBreak, setIsBreak] = useState(false)
   const [sessionType, setSessionType] = useState('focus') // focus or break
   const intervalRef = useRef(null)
   const startTimeRef = useRef(null)
+
+  // 當用戶設置改變時更新時長
+  useEffect(() => {
+    if (!isRunning) {
+      setMinutes(isBreak ? breakDuration : pomodoroDuration)
+    }
+  }, [user?.pomodoro_duration, user?.break_duration, isBreak, isRunning])
 
   useEffect(() => {
     if (isRunning) {
@@ -50,7 +62,7 @@ const PomodoroTimer = ({ onSessionComplete }) => {
 
   const handleReset = () => {
     setIsRunning(false)
-    setMinutes(isBreak ? 5 : 25)
+    setMinutes(isBreak ? breakDuration : pomodoroDuration)
     setSeconds(0)
   }
 
@@ -68,7 +80,7 @@ const PomodoroTimer = ({ onSessionComplete }) => {
 
     // 記錄到後端
     try {
-      const duration = isBreak ? 5 : 25
+      const duration = isBreak ? breakDuration : pomodoroDuration
       await pomodoroAPI.createSession({
         duration,
         session_type: isBreak ? 'break' : 'focus',
@@ -86,12 +98,12 @@ const PomodoroTimer = ({ onSessionComplete }) => {
     if (isBreak) {
       setIsBreak(false)
       setSessionType('focus')
-      setMinutes(25)
+      setMinutes(pomodoroDuration)
       alert('休息結束！準備開始新的番茄鐘 🍅')
     } else {
       setIsBreak(true)
       setSessionType('break')
-      setMinutes(5)
+      setMinutes(breakDuration)
       alert('專注時間結束！該休息一下了 ☕')
     }
     setSeconds(0)
@@ -101,7 +113,8 @@ const PomodoroTimer = ({ onSessionComplete }) => {
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
   }
 
-  const progress = ((isBreak ? 5 : 25) * 60 - (minutes * 60 + seconds)) / ((isBreak ? 5 : 25) * 60) * 100
+  const totalDuration = isBreak ? breakDuration : pomodoroDuration
+  const progress = (totalDuration * 60 - (minutes * 60 + seconds)) / (totalDuration * 60) * 100
 
   return (
     <div className="card h-full">
@@ -186,7 +199,7 @@ const PomodoroTimer = ({ onSessionComplete }) => {
       {/* 提示 */}
       <div className="mt-6 p-3 bg-gray-50 rounded-lg">
         <p className="text-xs text-gray-600 text-center">
-          💡 保持專注 25 分鐘，然後休息 5 分鐘
+          💡 保持專注 {pomodoroDuration} 分鐘，然後休息 {breakDuration} 分鐘
         </p>
       </div>
     </div>

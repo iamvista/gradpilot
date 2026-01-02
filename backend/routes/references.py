@@ -80,7 +80,7 @@ def get_references():
     if tags:
         query = query.filter(Reference.tags.ilike(f'%{tags}%'))
 
-    # 搜索
+    # 搜尋
     if search:
         query = query.filter(
             or_(

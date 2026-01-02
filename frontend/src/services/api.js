@@ -81,7 +81,7 @@ export const dashboardAPI = {
   getStats: () => api.get('/dashboard/stats'),
 };
 
-// 搜索 API
+// 搜尋 API
 export const searchAPI = {
   searchAll: (query) => api.get('/search', { params: { q: query } }),
   searchTodos: (query) => api.get('/search/todos', { params: { q: query } }),
